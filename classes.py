@@ -1,4 +1,5 @@
 import pygame
+from math import pi, atan, sin, cos
 
 class Object:
     def __init__(self, x, y, color, width, height):
@@ -45,13 +46,17 @@ class Player(Object):
         Object.__init__(self, 0, 0, color, width, height)
         self.dx = dx
         self.dy = dy
+        self.shootCounter = 0
 
     def shoot(self, screen):
-        mx, my = pygame.mouse.get_pos()
-
         if pygame.key.get_pressed()[pygame.K_SPACE]:
-            pygame.draw.line(screen, (255, 0, 0), (self.x, self.y), (mx, my), 5)
+            if self.shootCounter % 60 == 0:
+                return True
+            self.shootCounter += 1
 
+        else:
+            self.shootCounter = 0
+            
     def move(self, surface):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -93,3 +98,41 @@ class Zombie(Object):
         elif player.y < self.y:
             newY = self.y - self.dy
             self.y = self.collideY(newY, surface)
+
+class Bullet(Object):
+    def __init__(self, x, y, mousePos, color, width, height, velocity):
+        self.velocity = velocity
+        self.dx, self.dy = self.getSpeeds((x, y), (mousePos), velocity)
+        Object.__init__(self, x, y, color, width, height)
+
+
+    
+    #DOESNT WORK
+    
+    def getSpeeds(self, bulletPos, mousePos, velocity):
+        if bulletPos[0] < mousePos[0]:
+            if bulletPos[1] < mousePos[1]:
+                self.angle = 0.5 * pi + atan((mousePos[1] - bulletPos[1]) / (mousePos[0] - bulletPos[0]))
+            else:
+                self.angle = atan((mousePos[0] - bulletPos[0]) / (bulletPos[1] - mousePos[1]))
+        else:
+            if bulletPos[1] < mousePos[1]:
+                self.angle = pi + atan((bulletPos[0] - mousePos[0]) / (mousePos[1] - bulletPos[1]))
+            else:
+                self.angle = 2 * pi - atan((bulletPos[0] - mousePos[0]) / (bulletPos[1] - mousePos[1]))
+
+        if self.angle >= 0 and self.angle < 0.5 * pi:
+            return self.velocity * sin(self.angle), self.velocity * cos(self.angle)
+
+        if self.angle >= 0.5 * pi and self.angle < pi:
+            return self.velocity * cos(self.angle - (0.5 * pi)), self.velocity * sin(self.angle - (0.5 * pi))
+
+        if self.angle >= pi and self.angle < 1.5 * pi:
+            return -(self.velocity * sin(self.angle - pi)), -(self.velocity * cos(self.angle - pi))
+
+        else:
+            return -(self.velocity * sin(2 * pi - self.angle)), self.velocity * cos(2 * pi - self.angle)
+
+    def move(self):
+        self.x += self.dx
+        self.y += self.dy

@@ -58,6 +58,7 @@ def buildLevel(level, objects, zombies, player):
 player = Player(2, 2, red, 10, 10)
 objects = []
 zombies = []
+bullets = []
 
 #loadLevel(objects, zombies, "testLevel.txt")
 level = generateLevel()
@@ -74,8 +75,12 @@ while gameState != "exit":
     
     for i in zombies:
         i.move(player, screen)
+
+    for i in bullets:
+        i.move()
     
     screen.fill(black)
+    
     for i in objects:
         screen.blit(i.surface, (i.x, i.y))
 
@@ -84,7 +89,13 @@ while gameState != "exit":
     for i in zombies:
         screen.blit(i.surface, (i.x, i.y))
 
-    player.shoot(screen)
+    for i in bullets:
+        screen.blit(i.surface, (i.x, i.y))
+
+    if player.shoot(screen):
+        bullet = Bullet(player.x, player.y, pygame.mouse.get_pos(), (0, 0, 255), 2, 2, 5)
+        bullets.append(bullet)
+        
 
     pygame.display.flip()
     clock.tick(FPS)
