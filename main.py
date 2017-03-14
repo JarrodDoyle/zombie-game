@@ -2,6 +2,7 @@ import pygame
 import sys
 from random import randint
 from classes import *
+from level import *
 
 
 pygame.init()
@@ -21,27 +22,46 @@ gameState = "running"
 
 wallColour = (218, 212, 94)
 
+def generateLevel():
+    level = Level((50, 40), "w", " ")
+    placeAllEntities(level)
+    return level.board
 
 def loadLevel(objects, zombies, fileName):
     fileHandle = open(fileName, "r")
+    level = []
     for y in range(int(SCREENHEIGHT / 20)):
-        row = fileHandle.readline()
+        fileRow = fileHandle.readline()
+        levelRow = []
         for x in range(int(SCREENWIDTH / 20)):
-            char = row[x]
+            char = fileRow[x]
+            
+def buildLevel(level, objects, zombies, player):
+     for y in range(len(level)):
+         for x in range(len(level[y])):
+            char = level[y][x]
+            
             if char == "w":
                 obj = Object(x * 20, y * 20, wallColour, 20, 20)
                 objects.append(obj)
 
             elif char == "z":
-                obj = Zombie(x * 20, y * 20, 1, 1, green, 10, 10)
+                obj = Zombie(x * 20, y * 20, 1, 1, green, 5, 5)
                 zombies.append(obj)
 
+            elif char == "p":
+                player.x = x * 20
+                player.y = y * 20
+                
 
-player = Player(100, 100, 3, 3, red, 20, 20)
+
+player = Player(2, 2, red, 10, 10)
 objects = []
 zombies = []
 
-loadLevel(objects, zombies, "testLevel.txt")
+#loadLevel(objects, zombies, "testLevel.txt")
+level = generateLevel()
+buildLevel(level, objects, zombies, player)
 
 redraw = True
 

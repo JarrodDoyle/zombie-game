@@ -41,8 +41,8 @@ class Object:
         return newX
 
 class Player(Object):
-    def __init__(self, x, y, dx, dy, color, width, height):
-        Object.__init__(self, x, y, color, width, height)
+    def __init__(self, dx, dy, color, width, height):
+        Object.__init__(self, 0, 0, color, width, height)
         self.dx = dx
         self.dy = dy
 
