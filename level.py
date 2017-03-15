@@ -85,11 +85,4 @@ def placeAllEntities(level):
             char = "p"
         level.placeEntity(i, char)
     
-if __name__ == "__main__":
-    while True:
-        level = Level((40, 30), "#", " ")
-        placeAllEntities(level)
-        level.displayBoard()
-        input()
-    
     
