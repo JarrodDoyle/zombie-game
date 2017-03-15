@@ -77,7 +77,7 @@ while gameState != "exit":
         i.move(player, screen)
 
     for i in bullets:
-        i.move()
+        i.move(screen)
     
     screen.fill(black)
     
